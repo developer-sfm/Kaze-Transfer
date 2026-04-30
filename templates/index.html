@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kaze Transfer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- Adding the Nav Bar -->
+    <header>
+      <nav class="navigation">
+        <div class="logo">
+          <a href="{{url_for('home')}}">Kaze Transfer</a>
+        </div>
+
+        <div class="navLinks" id="navLinks">
+          <ul>
+            <li><a href="{{url_for('home')}}">Home</a></li>
+            <li><a href="{{url_for('features')}}">Features</a></li>
+            <li><a href="{{url_for('about')}}">About</a></li>
+            <li><a href="{{url_for('updates')}}">Updates</a></li>
+            <li>
+              <button class="theme" onclick="changeTheme()">
+                <img
+                  src="{{ url_for('static', filename='media/darkMode.png') }}"
+                  class="themeBtn darkBtn"
+                  alt="DarkMode"
+                />
+                <img
+                  src="{{ url_for('static', filename='media/lightMode.png') }}"
+                  class="themeBtn lightBtn"
+                  alt="LightMode"
+                />
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    <h1 class="status" id="status">Open Hand To Recieve Picture!</h1>
+
+    <!-- Rating Menu -->
+    <div id="overlay" class="overlay">
+      <div class="ratingMenu" id="ratingMenu">
+        <div class="cancel">
+          <button class="cancelBtn" id="cancelBtn" onclick="cancel()">
+            &times;
+          </button>
+        </div>
+
+        <!-- <div class="ratingText">Consider Rating</div> -->
+        <div class="ratingStars">
+          <input type="radio" name="rating" id="1" /><label for="1"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="2" /><label for="2"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="3" /><label for="3"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="4" /><label for="4"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="5" /><label for="5"
+            >&#x2605;</label
+          >
+        </div>
+        <div class="feedback" id="feedback">
+          <p>:Feedback (optional)</p>
+          <textarea
+            id="userFeedback"
+            rows="4"
+            placeholder="How did you feel about Kaze Transfer"
+          ></textarea>
+          <button type="submit" class="submit" onclick="submitting()">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Adding a Start Page -->
+
+    <!-- Defining audios for haptic feedback -->
+    <audio
+      id="pop"
+      src="{{ url_for('static', filename='media/pop.mp3') }}"
+    ></audio>
+    <audio
+      id="click"
+      src="{{ url_for('static', filename='media/click.mp3') }}"
+    ></audio>
+
+    <!-- webcam access -->
+    <video
+      id="video"
+      autoplay
+      playsinline
+      muted
+      width="300"
+      height="240"
+      style="display: none"
+    ></video>
+    <canvas id="canvas" width="300" height="240" style="display: none"></canvas>
+
+    <!-- displaying image -->
+    <div class="showcase">
+      <img id="img" src="" alt="-" />
+
+      <div class="ctaDiv">
+        <!-- Button Downloading Image -->
+        <a
+          href="{{ url_for('static', filename='screenshots/pic.jpg') }}"
+          download="my_Image_1.jpg"
+        >
+          <button
+            id="dBtn"
+            type="button"
+            onclick="playSound()"
+            style="display: none"
+          >
+            Download Image
+          </button>
+        </a>
+
+        <!-- Button Opening rating Menu -->
+        <button class="cta" id="appreciate" onclick="rating()">
+          Appreciate!
+        </button>
+      </div>
+    </div>
+
+    <!-- javascript start -->
+
+    <script>
+      var socket = io();
+
+      // Loading theme if saved
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) document.body.setAttribute("data-theme", savedTheme);
+      });
+
+      // initializing webcam for browser
+      const video = document.getElementById("video");
+      const canvas = document.getElementById("canvas");
+      const context = canvas.getContext("2d");
+
+      // initializing audios
+      const popSound = document.getElementById("pop");
+      const clickSound = document.getElementById("click");
+
+      // Accessing webcam (browser)
+
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          video.srcObject = stream;
+          video.onloadedmetadata = () => {
+            video.play();
+            sendFrames();
+          };
+        })
+        .catch((err) => {
+          console.log("Camera Not Accessible: ", err);
+          document.getElementById("status").innerText =
+            "Unable To Access Camera!";
+        });
+
+      // sending frames via string to socket
+      function sendFrames() {
+        setInterval(() => {
+          if (video.readyState < 2) return; //waiting for the image to be fully captured
+
+          context.drawImage(video, 0, 0, 300, 240);
+          const data = canvas.toDataURL("image/jpeg", 0.2);
+          socket.emit("clientCam", data);
+        }, 350);
+      }
+
+      // Receiving image from python after processing
+
+      socket.on("encodedImg", function (info) {
+        image = document.getElementById("img");
+        // playing audio when image recieved
+        popSound.play();
+
+        document.getElementById("status").style.display = "none";
+        image.classList.add("loaded");
+        image.src = `data:image/jpeg;base64,${info.image}`;
+
+        document.getElementById("dBtn").style.display = "inline-block";
+      });
+
+      // playing audio when button is clicked
+      function playSound() {
+        clickSound.currentTime = 0;
+        clickSound.play();
+      }
+
+      // Rating Menu Logic
+      // Cancel Button
+      function cancel() {
+        const ratingMenu = document.getElementById("ratingMenu");
+        const overlay = document.getElementById("overlay");
+
+        ratingMenu.classList.remove("active");
+        overlay.classList.remove("active");
+      }
+
+      // On Rating
+      function rating() {
+        const ratingMenu = document.getElementById("ratingMenu");
+        const overlay = document.getElementById("overlay");
+
+        ratingMenu.classList.toggle("active");
+        overlay.classList.toggle("active");
+      }
+
+      // Sending ratings to a file via socketio(python)
+      function submitting() {
+        const ratingMenu = document.getElementById("ratingMenu");
+        const overlay = document.getElementById("overlay");
+        const submitBtn = document.getElementsByClassName("submit");
+
+        const userFeedB = document.getElementById("userFeedback").value;
+        const star = document.querySelector("input[name='rating']:checked");
+        const starN = star ? 6 - star.id : 0;
+
+        socket.emit("Feedback", {
+          rating: starN,
+          feedB: userFeedB,
+        });
+
+        ratingMenu.classList.remove("active");
+        overlay.classList.remove("active");
+      }
+
+      // Changing Theme
+      function changeTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute("data-theme") || "light";
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+
+        body.setAttribute("data-theme", newTheme);
+        // console.log(newTheme);
+        localStorage.setItem("theme", newTheme);
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) document.body.setAttribute("data-theme", savedTheme);
+      }
+    </script>
+  </body>
+</html>

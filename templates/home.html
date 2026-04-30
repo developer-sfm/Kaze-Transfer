@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Project Kaze</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/start.css')}}"
+    />
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  </head>
+
+  <body>
+    <header>
+      <nav class="navigation">
+        <div class="logo">
+          <a href="{{url_for('home')}}">Kaze Transfer</a>
+        </div>
+
+        <div class="navLinks" id="navLinks">
+          <ul>
+            <li><a href="{{url_for('home')}}">Home</a></li>
+            <li><a href="{{url_for('features')}}">Features</a></li>
+            <li><a href="{{url_for('about')}}">About</a></li>
+            <li><a href="{{url_for('updates')}}">Updates</a></li>
+            <li>
+              <button class="theme" onclick="changeTheme()">
+                <img
+                  src="{{ url_for('static', filename='media/darkMode.png') }}"
+                  class="themeBtn darkBtn"
+                  alt="DarkMode"
+                />
+                <img
+                  src="{{ url_for('static', filename='media/lightMode.png') }}"
+                  class="themeBtn lightBtn"
+                  alt="LightMode"
+                />
+              </button>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    </header>
+
+    {% block content %}
+    <div class="quoteDiv">
+      <h1 class="quote">
+        "Innovation Is Just Taking<br />Two Things That Already Exist<br />And
+        Putting Them Together<br />In A New Way"
+      </h1>
+    </div>
+
+    <div class="ctaDiv">
+      <button onclick="starter()" class="cta">Try Out!</button>
+      <button class="cta" id="appreciate" onclick="rating()">
+        Appreciate!
+      </button>
+    </div>
+
+    <div id="overlay" class="overlay">
+      <div class="ratingMenu" id="ratingMenu">
+        <div class="cancel">
+          <button class="cancelBtn" id="cancelBtn" onclick="cancel()">
+            &times;
+          </button>
+        </div>
+
+        <!-- <div class="ratingText">Consider Rating</div> -->
+        <div class="ratingStars">
+          <input type="radio" name="rating" id="1" /><label for="1"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="2" /><label for="2"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="3" /><label for="3"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="4" /><label for="4"
+            >&#x2605;</label
+          >
+          <input type="radio" name="rating" id="5" /><label for="5"
+            >&#x2605;</label
+          >
+        </div>
+        <div class="feedback" id="feedback">
+          <p>:Feedback (optional)</p>
+          <textarea
+            id="userFeedback"
+            rows="4"
+            placeholder="How did you feel about Kaze Transfer"
+          ></textarea>
+          <button type="submit" class="submit" onclick="submitting()">
+            Submit
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endblock content %}
+
+    <script>
+      var socket = io();
+
+      window.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("theme");
+        if (savedTheme) document.body.setAttribute("data-theme", savedTheme);
+      });
+
+      function starter() {
+        window.open("/transfer", "_blank");
+      }
+
+      function cancel() {
+        const ratingMenu = document.getElementById("ratingMenu");
+        const overlay = document.getElementById("overlay");
+
+        ratingMenu.classList.remove("active");
+        overlay.classList.remove("active");
+      }
+
+      function rating() {
+        const ratingMenu = document.getElementById("ratingMenu");
+        const overlay = document.getElementById("overlay");
+
+        ratingMenu.classList.toggle("active");
+        overlay.classList.toggle("active");
+      }
+
+      function submitting() {
+        const ratingMenu = document.getElementById("ratingMenu");
+        const overlay = document.getElementById("overlay");
+        const submitBtn = document.getElementsByClassName("submit");
+
+        const userFeedB = document.getElementById("userFeedback").value;
+        const star = document.querySelector("input[name='rating']:checked");
+        const starN = star ? 6 - star.id : 0;
+
+        socket.emit("Feedback", {
+          rating: starN,
+          feedB: userFeedB,
+        });
+
+        ratingMenu.classList.remove("active");
+        overlay.classList.remove("active");
+      }
+
+      function changeTheme() {
+        const body = document.body;
+        const currentTheme = body.getAttribute("data-theme") || "light";
+        const newTheme = currentTheme === "light" ? "dark" : "light";
+
+        body.setAttribute("data-theme", newTheme);
+        // console.log(newTheme);
+        localStorage.setItem("theme", newTheme);
+      }
+    </script>
+  </body>
+</html>

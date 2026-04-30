@@ -1,0 +1,85 @@
+{% extends "home.html" %} {% block title %}Features{% endblock title %} {% block
+content %}
+<style>
+  h1 {
+    margin-left: 10px;
+    font-family: "Rubik", sans-serif;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 30px;
+  }
+
+  .container {
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  div .using,
+  .features,
+  .note {
+    width: 90vw;
+    height: auto;
+    padding: 20px;
+    margin-left: -40px;
+    border: 2px solid var(--border-color);
+    background-color: var(--div-color);
+    border-radius: 10px;
+    gap: 20px;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    margin-right: auto;
+    margin-left: 40px;
+    color: var(--text-color);
+    margin-bottom: 6px;
+  }
+  p {
+    font-family: "Rubik", sans-serif;
+    font-size: 1.2rem;
+    color: var(--doc-color);
+  }
+</style>
+<h1>How To Use Kaze Transfer</h1>
+
+<div class="container">
+  <h2>How To Use?</h2>
+  <div class="using">
+    <p>
+      Kaze transfer currently needs a PC(server) to run. Once the sever is
+      started, open any browser on your phone, other PC or any other device and
+      type "http://[YOUR IP ADDRESS]:5000" in the search bar.<br />Once opened,
+      the browser will ask for your permission to use the camera and capture and
+      processs your video. After allowing your program will start and you can
+      continue transferring images.
+    </p>
+  </div>
+
+  <h2>Features:</h2>
+  <div class="features">
+    <p>
+      Kaze Transfer lets the user(or multiple users) to capture and share
+      screenshots through gestures. <br />
+      The user can only capture the screenshot on the server side through an
+      "Closed Hand" gesture and the screenshot will be transferred to the
+      client(Website) as soon as the user showcases an "Open Hand" gesture.
+      <br /><br />
+      The client can also download the screenshot.
+    </p>
+  </div>
+
+  <h2>IMPORTANT!</h2>
+  <div class="note">
+    <p>
+      <strong>NOTE:</strong> THE SCREENSHOTS AND VIDEO CAPTURED BY BOTH YOUR
+      SERVER AND CLIENT SIDES ARE END TO END ENCRYPTED, MEANING NO OTHER
+      PERSON(not even Kaze Transfer team) CAN ACCESS OR LOOK AT THEM.
+    </p>
+  </div>
+</div>
+
+{% endblock content %}

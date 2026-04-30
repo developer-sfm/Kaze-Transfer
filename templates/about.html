@@ -1,0 +1,86 @@
+{% extends "home.html" %} {% block title %}About{% endblock title %} {% block
+content %}
+<style>
+  h1 {
+    margin-left: 10px;
+    font-family: "Rubik", sans-serif;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 30px;
+  }
+
+  .container {
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  div .intro,
+  .origin,
+  .bts {
+    width: 90vw;
+    height: auto;
+    padding: 20px;
+    margin-left: -40px;
+    border: 2px solid var(--border-color);
+    background-color: var(--div-color);
+    border-radius: 10px;
+    gap: 20px;
+    margin-bottom: 10px;
+  }
+
+  h2 {
+    margin-right: auto;
+    margin-left: 40px;
+    color: var(--text-color);
+    margin-bottom: 6px;
+  }
+  p {
+    font-family: "Rubik", sans-serif;
+    font-size: 1.2rem;
+    color: var(--doc-color);
+  }
+</style>
+
+<h1>What Exactly Is Kaze Transfer?</h1>
+<div class="container">
+  <h2>Introduction</h2>
+  <div class="intro">
+    <p>
+      Kaze Transfer is a real-time system that lets users transfer files using
+      simple hand gestures instead of clicks and menus. It is built using
+      Python, web technologies such as HTML, CSS and JavaScript. It starts a
+      server where opening and closing a hand can trigger file-sharing events.
+    </p>
+  </div>
+
+  <h2>Origin</h2>
+  <div class="origin">
+    <p>
+      Kaze Transfer was created as a "Fun" project solely by a student who
+      wanted to build something that is visually interesting, challenging, and
+      complex combining computer vision with modern web communication.
+    </p>
+  </div>
+
+  <h2>Behind The System</h2>
+  <div class="bts">
+    <p>
+      The system is split into 2 main parts, the Server and the Client sides.
+      The server purely uses python with flask and socketio. Flask connects the
+      backend(python) to the frontend(Web, html). Socketio is used to let the
+      frontend and backend share data through Live connection. Python runs a
+      function which captures the camera feed and processess it via openCV,
+      Mediapipe. As soon as the function sees the hand open, screenshot is
+      captured and the system awaits for the closed hand gesture.<br />The
+      client side uses web technologies like HTML, CSS and JavaScript. The
+      camera feed sends the live video in the form of frames to the backend and
+      looks for a closed hand gesture until the screenshot is displayed onto the
+      HTML.
+    </p>
+  </div>
+</div>
+{% endblock content %}

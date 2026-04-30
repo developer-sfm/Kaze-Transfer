@@ -1,0 +1,56 @@
+{% extends "home.html" %} {% block title %}Updates{% endblock title %} {% block
+content %}
+<style>
+  h1 {
+    margin-left: 10px;
+    font-family: "Rubik", sans-serif;
+    font-weight: bold;
+    color: var(--text-color);
+    margin-bottom: 30px;
+  }
+
+  .container {
+    width: 100vw;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  div .updates {
+    width: 90vw;
+    height: auto;
+    padding: 20px;
+    margin-left: -40px;
+    border: 2px solid var(--border-color);
+    background-color: var(--div-color);
+    border-radius: 10px;
+    gap: 20px;
+  }
+
+  h2 {
+    margin-right: auto;
+    margin-left: 40px;
+    color: var(--text-color);
+    margin-bottom: 6px;
+  }
+  p {
+    font-family: "Rubik", sans-serif;
+    font-size: 1.2rem;
+    color: var(--doc-color);
+  }
+</style>
+<h1>More Updates Regarding Kaze Transfer?</h1>
+<div class="container">
+  <h2>New Updates?</h2>
+  <div class="updates">
+    <p>
+      Its unfortunate but it is very unlikely that Kaze Transfer will recieve
+      any updates due to the developer being busy in his other projects. But, if
+      Kaze transfer get any updates I believe they'll be big and bring brand new
+      features, though it is not very likely to be anytime soon. <br />
+    </p>
+  </div>
+</div>
+{% endblock content %}
