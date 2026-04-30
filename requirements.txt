@@ -1,0 +1,7 @@
+Flask
+Flask-SocketIO
+opencv-python
+numpy
+mediapipe
+pyautogui
+pygame
